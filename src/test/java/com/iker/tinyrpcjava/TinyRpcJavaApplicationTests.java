@@ -1,10 +1,10 @@
-package com.example.tinyrpcjava;
+package com.iker.tinyrpcjava;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TinyrpcJavaApplicationTests {
+class TinyRpcJavaApplicationTests {
 
     @Test
     void contextLoads() {

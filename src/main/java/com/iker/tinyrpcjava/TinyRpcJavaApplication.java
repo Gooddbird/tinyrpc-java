@@ -1,13 +1,13 @@
-package com.example.tinyrpcjava;
+package com.iker.tinyrpcjava;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TinyrpcJavaApplication {
+public class TinyRpcJavaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TinyrpcJavaApplication.class, args);
+        SpringApplication.run(TinyRpcJavaApplication.class, args);
     }
 
 }

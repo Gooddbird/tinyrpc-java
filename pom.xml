@@ -43,6 +43,11 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.86.Final</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.19.4</version>
+        </dependency>
     </dependencies>
 
     <build>
