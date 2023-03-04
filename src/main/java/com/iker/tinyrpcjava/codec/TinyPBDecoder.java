@@ -2,18 +2,21 @@ package com.iker.tinyrpcjava.codec;
 
 import com.iker.tinyrpcjava.protocol.TinyPBProtocol;
 import com.iker.tinyrpcjava.util.TinyPBErrorCode;
-import com.iker.tinyrpcjava.util.TinyRpcSystemException;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 
 @Slf4j
+@ChannelHandler.Sharable
+@Component
 public class TinyPBDecoder extends ByteToMessageDecoder {
 
     /**
@@ -29,23 +32,27 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
     @SneakyThrows(IndexOutOfBoundsException.class)
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int from = in.readerIndex();
+        log.debug("begin to do TinyPBDecoder.decode");
         while (in.isReadable()) {
             int start = in.indexOf(from, in.writerIndex(), TinyPBProtocol.getPbStart());
             if (start == -1) {
                 log.debug("not find TinyPB protocol start PbStart(0x02), decode end");
                 break;
             }
+            log.debug(String.format("find start index %d", start));
 
             if (in.writerIndex() - start < TinyPBProtocol.getMinPkLen()) {
-                log.debug("read less min length of TinyPB package (26)");
+                log.error(String.format("writerIndex [%d], start [%d], read less min length of TinyPB package (%d)",
+                        in.writerIndex(), start, TinyPBProtocol.getMinPkLen()));
                 break;
             }
             int packageLenIndex = start + 1;
             int packageLen = in.getInt(packageLenIndex);
+            log.debug(String.format("get packageLen %d", packageLen));
 
-            int end = start + packageLen;
+            int end = start + packageLen - 1;
             if (end >= in.writerIndex()) {
-                log.debug("read less min length of TinyPB package (26)");
+                log.debug(String.format("read less bytes than packageLen [%d]", packageLen));
                 from = start + 1;
                 continue;
             }
@@ -76,7 +83,6 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             int msgReqLenIndex = packageLenIndex + 4;
             int msgReqLen = in.getInt(msgReqLenIndex);
             log.debug(String.format("read msgReqLen[%d]", msgReqLen));
-            request.setMsgReqLen(msgReqLen);
 
             int msgReqIndex = msgReqLenIndex + 4;
             if (msgReqIndex + msgReqLen >= in.writerIndex()) {
@@ -90,7 +96,6 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             int serviceNameLenIndex = msgReqIndex + msgReqLen;
             int serviceNameLen = in.getInt(serviceNameLenIndex);
             log.debug(String.format("read serviceNameLen[%d]", serviceNameLen));
-            request.setServiceNameLen(serviceNameLen);
 
             int serviceNameIndex = serviceNameLenIndex + 4;
             if (serviceNameIndex + serviceNameLen >= in.writerIndex()) {
@@ -106,7 +111,6 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int errInfoLenIndex = errCodeIndex + 4;
             int errInfoLen = in.getInt(errInfoLenIndex);
-            request.setErrInfoLen(errInfoLen);
 
             int errInfoIndex = errInfoLenIndex + 4;
             request.setErrInfo(String.valueOf(in.getCharSequence(errInfoIndex, errInfoLen, CharsetUtil.UTF_8)));
@@ -116,7 +120,8 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int checkSumIndex = end - 4;
             request.setCheckSum(in.getInt(checkSumIndex));
+            out.add(request);
         }
-
+        log.debug("end TinyPBDecoder.decode");
     }
 }

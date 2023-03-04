@@ -5,7 +5,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.sctp.nio.NioSctpServerChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -31,7 +31,7 @@ public class TcpServer {
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .group(mainLoopGroup, workerLoopGroup)
                 .option(ChannelOption.SO_BACKLOG, 128)
-                .channel(NioSctpServerChannel.class);
+                .channel(NioServerSocketChannel.class);
         ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
         if (channelFuture.isSuccess()) {
             System.out.println("bind success");
