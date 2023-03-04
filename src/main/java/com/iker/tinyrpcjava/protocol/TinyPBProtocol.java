@@ -4,6 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class TinyPBProtocol extends AbstractProtocol {
+
+    @Getter
+    private static final byte pbStart = 0x02;
+
+    @Getter
+    private static final byte pbEnd = 0x03;
+
+    @Getter
+    private static final int minPkLen = 26;         // min length of a TinyPB protocol package. include pbStart and pbEnd
+
+    @Getter
+    private static final int maxPkLen = 65536;         // max length of a TinyPB protocol package.
+
     @Getter
     @Setter
     private int pkLen;      // length of all package
