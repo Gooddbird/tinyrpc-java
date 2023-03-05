@@ -1,4 +1,4 @@
-package com.iker.tinyrpcjava.protocol;
+package com.iker.tinyrpc.protocol;
 
 import lombok.Getter;
 import lombok.Setter;

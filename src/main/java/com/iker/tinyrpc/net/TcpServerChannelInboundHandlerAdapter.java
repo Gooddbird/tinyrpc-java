@@ -1,5 +1,6 @@
-package com.iker.tinyrpcjava.net;
+package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,9 +10,9 @@ import java.net.InetSocketAddress;
 @Slf4j
 @ChannelHandler.Sharable
 @Component
-public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+public class TcpServerChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
 
-    public TcpChannelInboundHandlerAdapter() {
+    public TcpServerChannelInboundHandlerAdapter() {
         super();
     }
 
@@ -86,9 +87,15 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        super.channelRead(ctx, msg);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
         log.debug("channelRead, remote addr: " + address.getHostString());
+        TinyPBProtocol protocol = (TinyPBProtocol) msg;
+        if (protocol != null) {
+            log.debug(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
+        } else {
+            log.debug("empty protocol object");
+        }
+        super.channelRead(ctx, msg);
     }
 
     /**

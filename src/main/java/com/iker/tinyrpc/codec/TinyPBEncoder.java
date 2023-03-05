@@ -1,6 +1,6 @@
-package com.iker.tinyrpcjava.codec;
+package com.iker.tinyrpc.codec;
 
-import com.iker.tinyrpcjava.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

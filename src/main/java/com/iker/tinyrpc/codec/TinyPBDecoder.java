@@ -1,7 +1,7 @@
-package com.iker.tinyrpcjava.codec;
+package com.iker.tinyrpc.codec;
 
-import com.iker.tinyrpcjava.protocol.TinyPBProtocol;
-import com.iker.tinyrpcjava.util.TinyPBErrorCode;
+import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.util.TinyPBErrorCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,8 +15,6 @@ import java.util.List;
 
 
 @Slf4j
-@ChannelHandler.Sharable
-@Component
 public class TinyPBDecoder extends ByteToMessageDecoder {
 
     /**

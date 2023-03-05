@@ -1,4 +1,4 @@
-package com.iker.tinyrpcjava.util;
+package com.iker.tinyrpc.util;
 
 public class TinyRpcSystemException extends RuntimeException {
 

@@ -1,6 +1,6 @@
-package com.iker.tinyrpcjava.codec;
+package com.iker.tinyrpc.codec;
 
-import com.iker.tinyrpcjava.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;

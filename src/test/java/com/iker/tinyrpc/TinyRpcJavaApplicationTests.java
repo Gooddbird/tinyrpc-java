@@ -1,4 +1,4 @@
-package com.iker.tinyrpcjava;
+package com.iker.tinyrpc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
