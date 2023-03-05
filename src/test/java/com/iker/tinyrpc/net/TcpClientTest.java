@@ -1,5 +1,7 @@
 package com.iker.tinyrpc.net;
 
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,14 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 
+import java.net.InetSocketAddress;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
 class TcpClientTest {
-
-    @Resource
-    private TcpClient tcpClient;
 
     @BeforeEach
     void setUp() {
@@ -28,8 +29,9 @@ class TcpClientTest {
     @Test
     void connect() {
         try {
-            tcpClient.connect("127.0.0.1", 12345);
-            log.debug("connect success");
+            EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+            TcpClient tcpClient = new TcpClient(eventLoopGroup);
+            tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

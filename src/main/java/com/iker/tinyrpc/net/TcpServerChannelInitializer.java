@@ -19,7 +19,7 @@ public class TcpServerChannelInitializer extends ChannelInitializer<Channel> {
     private TinyPBEncoder tinyPBEncoder;
 
     @Resource
-    private TcpClientChannelInboundHandlerAdapter tcpChannelInboundHandlerAdapter;
+    private TcpServerChannelInboundHandlerAdapter tcpServerChannelInboundHandlerAdapter;
 
     // notice: netty don't allow Decoder to be Sharable, because decoder can't share, you must alloc new decoder object
     @Override
@@ -27,6 +27,6 @@ public class TcpServerChannelInitializer extends ChannelInitializer<Channel> {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
                 .addLast("decoder", new TinyPBDecoder())
                 .addLast("encoder", tinyPBEncoder)
-                .addLast("inboundHandlerAdapter", tcpChannelInboundHandlerAdapter);
+                .addLast("inboundHandlerAdapter", tcpServerChannelInboundHandlerAdapter);
     }
 }

@@ -5,11 +5,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.net.InetSocketAddress;
 
 @SpringBootTest
 @Slf4j
@@ -29,7 +27,7 @@ class TcpServerTest {
     @Test
     void bind() {
         try {
-            tcpServer.bind(12345);
+            tcpServer.start(new InetSocketAddress(12345));
             log.debug("bind success");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

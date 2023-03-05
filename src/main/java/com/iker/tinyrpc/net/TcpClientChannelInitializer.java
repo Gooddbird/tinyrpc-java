@@ -11,20 +11,13 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
-@Component
 @ChannelHandler.Sharable
-public class TcpClientChannelInitializer<SocketChannel> extends ChannelInitializer<Channel> {
-
-    @Resource
-    private TinyPBEncoder tinyPBEncoder;
-
-    @Resource
-    private TcpClientChannelInboundHandlerAdapter tcpClientChannelInboundHandlerAdapter;
+public class TcpClientChannelInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
                 .addLast("decoder", new TinyPBDecoder())
-                .addLast("encoder", tinyPBEncoder)
-                .addLast("inboundHandlerAdapter", tcpClientChannelInboundHandlerAdapter);
+                .addLast("encoder", new TinyPBEncoder())
+                .addLast("outboundHandlerAdapter", new TcpClientChannelOutboundHandlerAdapter());
     }
 }
