@@ -2,6 +2,7 @@ package com.iker.tinyrpc.net;
 
 import com.iker.tinyrpc.util.TinyRpcSystemException;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
@@ -9,8 +10,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
-
 
 @Slf4j
 public class TcpClient {
@@ -20,6 +21,8 @@ public class TcpClient {
 
     @Getter
     private final EventLoopGroup eventLoopGroup;
+
+    private Channel channel;
 
     public TcpClient(EventLoopGroup eventLoopGroup) {
         this.eventLoopGroup = eventLoopGroup;
@@ -37,7 +40,7 @@ public class TcpClient {
         connect(this.peerAddress);
     }
 
-    public void connect(InetSocketAddress peerAddress) throws InterruptedException, TinyRpcSystemException {
+    public void connect(InetSocketAddress peerAddress) throws TinyRpcSystemException {
         if (this.peerAddress != null) {
             throw new TinyRpcSystemException("init client failed, peerAddress has already set");
         }
@@ -49,25 +52,30 @@ public class TcpClient {
                 .remoteAddress(peerAddress)
                 .handler(new TcpClientChannelInitializer());
 
-        try {
-            ChannelFuture channelFuture = bootstrap.connect().sync();
-            channelFuture.addListener((ChannelFutureListener) future -> {
-                if (future.isSuccess()) {
-                    InetSocketAddress address = (InetSocketAddress) future.channel().remoteAddress();
-                    assert (address != null);
-                    log.debug(String.format("success connect to [%s:%d]", address.getHostName(), address.getPort()));
-                } else {
-                    log.error("connect failed");
-                    future.cause().printStackTrace();
-                    throw new TinyRpcSystemException(future.cause().getMessage());
-                }
-            });
-            channelFuture.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } finally {
-            eventLoopGroup.shutdownGracefully().sync();
-        }
-
+        ChannelFuture channelFuture = bootstrap.connect();
+        channel = channelFuture.channel();
+        channelFuture.addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                InetSocketAddress remoteAddress = (InetSocketAddress) future.channel().remoteAddress();
+                InetSocketAddress localAddress = (InetSocketAddress) future.channel().localAddress();
+                assert (remoteAddress != null);
+                log.info(String.format("success connect to remoteAddr[%s:%d], localAddr[%s:%d]",
+                        remoteAddress.getHostName(), remoteAddress.getPort(),
+                        localAddress.getHostName(), localAddress.getPort()));
+            } else {
+                log.error("connect failed, stack info:");
+                future.cause().printStackTrace();
+                throw new TinyRpcSystemException(future.cause().getMessage());
+            }
+        });
     }
+
+
+//    public ChannelFuture sendMessage() {
+//        if (channel.isActive()) {
+//            channel.writeAndFlush();
+//        }
+//    }
+
+
 }

@@ -16,17 +16,14 @@ import java.util.concurrent.TimeUnit;
 public class TcpServerChannelInitializer extends ChannelInitializer<Channel> {
 
     @Resource
-    private TinyPBEncoder tinyPBEncoder;
-
-    @Resource
-    private TcpServerChannelInboundHandlerAdapter tcpServerChannelInboundHandlerAdapter;
+    private TcpServerChannelInboundHandler tcpServerChannelInboundHandler;
 
     // notice: netty don't allow Decoder to be Sharable, because decoder can't share, you must alloc new decoder object
     @Override
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
                 .addLast("decoder", new TinyPBDecoder())
-                .addLast("encoder", tinyPBEncoder)
-                .addLast("inboundHandlerAdapter", tcpServerChannelInboundHandlerAdapter);
+                .addLast("encoder", new TinyPBEncoder())
+                .addLast("inboundHandlerAdapter", tcpServerChannelInboundHandler);
     }
 }

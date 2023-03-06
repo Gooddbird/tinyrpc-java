@@ -66,6 +66,7 @@ public class TcpServer {
 
             // wait until close this channel
             channelFuture.channel().closeFuture().sync();
+            log.info("TinyRPC quit success");
         } catch (InterruptedException e) {
             throw e;
         } finally {

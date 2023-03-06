@@ -10,9 +10,9 @@ import java.net.InetSocketAddress;
 @Slf4j
 @ChannelHandler.Sharable
 @Component
-public class TcpServerChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter {
 
-    public TcpServerChannelInboundHandlerAdapter() {
+    public TcpServerChannelInboundHandler() {
         super();
     }
 

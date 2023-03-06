@@ -28,12 +28,8 @@ class TcpClientTest {
 
     @Test
     void connect() {
-        try {
-            EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-            TcpClient tcpClient = new TcpClient(eventLoopGroup);
-            tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+        TcpClient tcpClient = new TcpClient(eventLoopGroup);
+        tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
     }
 }

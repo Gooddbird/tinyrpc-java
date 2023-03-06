@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @ChannelHandler.Sharable
-@Component
 public class TinyPBEncoder extends MessageToByteEncoder {
 
     /**
