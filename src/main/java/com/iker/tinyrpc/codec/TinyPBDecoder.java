@@ -30,11 +30,11 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
     @SneakyThrows(IndexOutOfBoundsException.class)
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int from = in.readerIndex();
-        log.debug("begin to do TinyPBDecoder.decode");
+        log.info("begin to do TinyPBDecoder.decode");
         while (in.isReadable()) {
             int start = in.indexOf(from, in.writerIndex(), TinyPBProtocol.getPbStart());
             if (start == -1) {
-                log.debug("not find TinyPB protocol start PbStart(0x02), decode end");
+                log.info("not find TinyPB protocol start PbStart(0x02), decode end");
                 break;
             }
             log.debug(String.format("find start index %d", start));
@@ -46,7 +46,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             }
             int packageLenIndex = start + 1;
             int packageLen = in.getInt(packageLenIndex);
-            log.debug(String.format("get packageLen %d", packageLen));
+            log.info(String.format("get packageLen %d", packageLen));
 
             int end = start + packageLen - 1;
             if (end >= in.writerIndex()) {
@@ -90,6 +90,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
                 continue;
             }
             request.setMsgReq(String.valueOf(in.getCharSequence(msgReqIndex, msgReqLen, CharsetUtil.UTF_8)));
+            log.info(String.format("read msgReq [%s]", request.getMsgReq()));
 
             int serviceNameLenIndex = msgReqIndex + msgReqLen;
             int serviceNameLen = in.getInt(serviceNameLenIndex);
@@ -103,6 +104,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
                 continue;
             }
             request.setServiceName(String.valueOf(in.getCharSequence(serviceNameIndex, serviceNameLen, CharsetUtil.UTF_8)));
+            log.info(String.format("read serviceName [%s]", request.getServiceName()));
 
             int errCodeIndex = serviceNameIndex + serviceNameLen;
             request.setErrCode(in.getInt(errCodeIndex));
@@ -120,6 +122,6 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             request.setCheckSum(in.getInt(checkSumIndex));
             out.add(request);
         }
-        log.debug("end TinyPBDecoder.decode");
+        log.info("end TinyPBDecoder.decode");
     }
 }

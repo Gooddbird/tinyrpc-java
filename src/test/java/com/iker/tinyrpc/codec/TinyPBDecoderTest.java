@@ -23,14 +23,6 @@ class TinyPBDecoderTest {
 
     }
 
-    int calculatePackageLen(TinyPBProtocol protocol) {
-        if (protocol == null) {
-            System.out.println("protobuf is null");
-            return -1;
-        }
-        return protocol.getMsgReq().length() + protocol.getServiceName().length() + protocol.getErrInfo().length() + protocol.getPbData().length() + TinyPBProtocol.getMinPkLen();
-    }
-
     public ByteBuf getByteBuf(TinyPBProtocol protocol) {
         ByteBuf byteBuf = buffer(256);
         byteBuf.writeInt(9891);

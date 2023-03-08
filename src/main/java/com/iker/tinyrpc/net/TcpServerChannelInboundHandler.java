@@ -26,9 +26,9 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelRegistered, remote addr: " + address.getHostString());
+        log.info("channelRegistered, remote addr: " + address.getHostString());
+        super.channelRegistered(ctx);
     }
 
     /**
@@ -41,9 +41,9 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelUnregistered, remote addr: " + address.getHostString());
+        log.info("channelUnregistered, remote addr: " + address.getHostString());
+        super.channelUnregistered(ctx);
     }
 
     /**
@@ -56,9 +56,9 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelActive, remote addr: " + address.getHostString());
+        log.info("channelActive, remote addr: " + address.getHostString());
+        super.channelActive(ctx);
     }
 
     /**
@@ -71,9 +71,9 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelInactive, remote addr: " + address.getHostString());
+        log.info("channelInactive, remote addr: " + address.getHostString());
+        super.channelInactive(ctx);
     }
 
     /**
@@ -88,12 +88,12 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelRead, remote addr: " + address.getHostString());
+        log.info("channelRead, remote addr: " + address.getHostString());
         TinyPBProtocol protocol = (TinyPBProtocol) msg;
         if (protocol != null) {
-            log.debug(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
+            log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
         } else {
-            log.debug("empty protocol object");
+            log.error("empty protocol object");
         }
         super.channelRead(ctx, msg);
     }
@@ -110,7 +110,7 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelReadComplete, remote addr: " + address.getHostString());
+        log.info("channelReadComplete, remote addr: " + address.getHostString());
     }
 
     /**
@@ -126,7 +126,7 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("userEventTriggered, remote addr: " + address.getHostString());
+        log.info("userEventTriggered, remote addr: " + address.getHostString());
     }
 
     /**
@@ -141,7 +141,7 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         super.channelWritabilityChanged(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelWritabilityChanged, remote addr: " + address.getHostString());
+        log.info("channelWritabilityChanged, remote addr: " + address.getHostString());
     }
 
     /**
@@ -157,6 +157,6 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("exceptionCaught, remote addr: " + address.getHostString());
+        log.info("exceptionCaught, remote addr: " + address.getHostString());
     }
 }
