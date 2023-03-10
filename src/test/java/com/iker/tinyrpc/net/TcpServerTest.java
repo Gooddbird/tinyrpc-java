@@ -13,9 +13,6 @@ import java.net.InetSocketAddress;
 @Slf4j
 class TcpServerTest {
 
-    @Resource
-    private TcpServer tcpServer;
-
     @BeforeEach
     void setUp() {
     }
@@ -27,6 +24,7 @@ class TcpServerTest {
     @Test
     void bind() {
         try {
+            TcpServer tcpServer = new TcpServer();
             tcpServer.start(new InetSocketAddress(12345));
             log.debug("bind success");
         } catch (InterruptedException e) {

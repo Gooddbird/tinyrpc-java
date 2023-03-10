@@ -1,15 +1,16 @@
 package com.iker.tinyrpc.net;
 
 import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.util.TinyRpcSystemException;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
+import static com.iker.tinyrpc.util.TinyPBErrorCode.ERROR_FAILED_DECODE;
+
 @Slf4j
 @ChannelHandler.Sharable
-@Component
 public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter {
 
     public TcpServerChannelInboundHandler() {
@@ -93,9 +94,10 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
         if (protocol != null) {
             log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
         } else {
-            log.error("empty protocol object");
+            throw new TinyRpcSystemException(ERROR_FAILED_DECODE, "failed get object");
         }
-        super.channelRead(ctx, msg);
+//        super.channelRead(ctx, msg);
+
     }
 
     /**

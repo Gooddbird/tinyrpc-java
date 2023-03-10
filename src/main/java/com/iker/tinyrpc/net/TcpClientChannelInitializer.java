@@ -16,7 +16,8 @@ public class TcpClientChannelInitializer extends ChannelInitializer<Channel> {
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
                 .addLast("decoder", new TinyPBDecoder())
+                .addLast("inboundHandlerAdapter", new TcpClientChannelInboundHandler())
                 .addLast("encoder", new TinyPBEncoder())
-                .addLast("outboundHandlerAdapter", new TcpClientChannelInboundHandler());
+                .addLast("exceptionHandler", new TcpServerExceptionHandler());
     }
 }

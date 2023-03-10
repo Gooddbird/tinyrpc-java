@@ -18,7 +18,6 @@ import java.net.InetSocketAddress;
 
 
 @Slf4j
-@Component
 public class TcpServer {
     @Getter
     @Setter
@@ -27,9 +26,6 @@ public class TcpServer {
     @Getter
     @Setter
     private EventLoopGroup workerLoopGroup;     // io subReactors
-
-    @Resource
-    private TcpServerChannelInitializer tcpServerChannelInitializer;
 
     @Getter
     private InetSocketAddress localAddress;
@@ -48,7 +44,7 @@ public class TcpServer {
                     .group(mainLoopGroup, workerLoopGroup)
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(tcpServerChannelInitializer)
+                    .childHandler(new TcpServerChannelInitializer())
                     .localAddress(localAddress);
 
             ChannelFuture channelFuture = serverBootstrap.bind().sync();

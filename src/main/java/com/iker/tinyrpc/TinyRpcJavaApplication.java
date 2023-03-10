@@ -1,11 +1,14 @@
 package com.iker.tinyrpc;
 
 import com.iker.tinyrpc.net.TcpServer;
+import com.iker.tinyrpc.util.SpringContextUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -15,16 +18,16 @@ import java.util.Arrays;
 public class TinyRpcJavaApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
-        log.debug("test TinyRpcJavaApplication run");
-        SpringApplication.run(TinyRpcJavaApplication.class, args);
-        log.debug("test TinyRpcJavaApplication run");
+        log.info("TinyRpcJavaApplication run begin");
+        ConfigurableApplicationContext context = SpringApplication.run(TinyRpcJavaApplication.class, args);
+        SpringContextUtil.setApplicationContext(context);
+        log.info("TinyRpcJavaApplication run end");
     }
 
+    @Getter
     @Resource
     private ApplicationContext applicationContext;
 
-    @Resource
-    private TcpServer tcpServer;
 
     /**
      * @param args incoming main method arguments
@@ -38,6 +41,5 @@ public class TinyRpcJavaApplication implements CommandLineRunner {
 //        {
 //            System.out.println(bean + " of Type :: " + applicationContext.getBean(bean).getClass());
 //        }
-//        tcpServer.bind(12345);
     }
 }
