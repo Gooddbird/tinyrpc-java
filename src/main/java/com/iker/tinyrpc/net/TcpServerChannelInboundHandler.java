@@ -1,17 +1,19 @@
-package com.iker.tinyrpcjava.net;
+package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.util.TinyRpcSystemException;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
+import static com.iker.tinyrpc.util.TinyPBErrorCode.ERROR_FAILED_DECODE;
+
 @Slf4j
 @ChannelHandler.Sharable
-@Component
-public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
+public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter {
 
-    public TcpChannelInboundHandlerAdapter() {
+    public TcpServerChannelInboundHandler() {
         super();
     }
 
@@ -25,9 +27,9 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelRegistered, remote addr: " + address.getHostString());
+        log.info("channelRegistered, remote addr: " + address.getHostString());
+        super.channelRegistered(ctx);
     }
 
     /**
@@ -40,9 +42,9 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelUnregistered, remote addr: " + address.getHostString());
+        log.info("channelUnregistered, remote addr: " + address.getHostString());
+        super.channelUnregistered(ctx);
     }
 
     /**
@@ -55,9 +57,9 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelActive, remote addr: " + address.getHostString());
+        log.info("channelActive, remote addr: " + address.getHostString());
+        super.channelActive(ctx);
     }
 
     /**
@@ -70,9 +72,9 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelInactive, remote addr: " + address.getHostString());
+        log.info("channelInactive, remote addr: " + address.getHostString());
+        super.channelInactive(ctx);
     }
 
     /**
@@ -86,9 +88,16 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        super.channelRead(ctx, msg);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelRead, remote addr: " + address.getHostString());
+        log.info("channelRead, remote addr: " + address.getHostString());
+        TinyPBProtocol protocol = (TinyPBProtocol) msg;
+        if (protocol != null) {
+            log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
+        } else {
+            throw new TinyRpcSystemException(ERROR_FAILED_DECODE, "failed get object");
+        }
+//        super.channelRead(ctx, msg);
+
     }
 
     /**
@@ -103,7 +112,7 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelReadComplete, remote addr: " + address.getHostString());
+        log.info("channelReadComplete, remote addr: " + address.getHostString());
     }
 
     /**
@@ -119,7 +128,7 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("userEventTriggered, remote addr: " + address.getHostString());
+        log.info("userEventTriggered, remote addr: " + address.getHostString());
     }
 
     /**
@@ -134,7 +143,7 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         super.channelWritabilityChanged(ctx);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("channelWritabilityChanged, remote addr: " + address.getHostString());
+        log.info("channelWritabilityChanged, remote addr: " + address.getHostString());
     }
 
     /**
@@ -150,6 +159,6 @@ public class TcpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapte
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
-        log.debug("exceptionCaught, remote addr: " + address.getHostString());
+        log.info("exceptionCaught, remote addr: " + address.getHostString());
     }
 }

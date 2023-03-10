@@ -1,4 +1,4 @@
-package com.iker.tinyrpcjava.util;
+package com.iker.tinyrpc.util;
 
 public enum TinyPBErrorCode {
     ERROR_FAILED_CONNECT(10000002),        // failed to connection peer host
