@@ -1,16 +1,27 @@
 package com.iker.tinyrpc.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class TinyRpcSystemException extends RuntimeException {
 
-    public TinyRpcSystemException(TinyPBErrorCode errorFailedDecode) {
-        super("Error code: " + errorFailedDecode.name());
-    }
+    @Getter
+    @Setter
+    private TinyPBErrorCode errorCode;
+
+    @Getter
+    @Setter
+    private String errorInfo;
+
 
     public TinyRpcSystemException(TinyPBErrorCode errorFailedDecode, String s) {
         super("Error code: " + errorFailedDecode.name() + ", Error info: " + s);
+        setErrorCode(errorFailedDecode);
+        setErrorInfo(s);
     }
 
     public TinyRpcSystemException(String s) {
         super("Error info: " + s);
+        setErrorInfo(s);
     }
 }

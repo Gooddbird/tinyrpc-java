@@ -95,7 +95,8 @@ public class TinyPBRpcController implements RpcController {
 
     @Override
     public void setFailed(String reason) {
-
+        errInfo = reason;
+        isFailed = true;
     }
 
     @Override

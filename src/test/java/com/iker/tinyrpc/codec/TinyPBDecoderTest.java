@@ -1,5 +1,6 @@
 package com.iker.tinyrpc.codec;
 
+import com.iker.tinyrpc.net.codec.TinyPBDecoder;
 import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
