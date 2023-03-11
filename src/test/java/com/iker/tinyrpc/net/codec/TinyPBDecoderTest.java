@@ -1,4 +1,4 @@
-package com.iker.tinyrpc.codec;
+package com.iker.tinyrpc.net.codec;
 
 import com.iker.tinyrpc.net.codec.TinyPBDecoder;
 import com.iker.tinyrpc.protocol.TinyPBProtocol;

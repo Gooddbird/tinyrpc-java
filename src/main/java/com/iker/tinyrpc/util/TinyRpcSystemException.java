@@ -2,7 +2,9 @@ package com.iker.tinyrpc.util;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TinyRpcSystemException extends RuntimeException {
 
     @Getter
@@ -18,6 +20,7 @@ public class TinyRpcSystemException extends RuntimeException {
         super("Error code: " + errorFailedDecode.name() + ", Error info: " + s);
         setErrorCode(errorFailedDecode);
         setErrorInfo(s);
+        log.error("Error code: " + errorFailedDecode.name() + ", Error info: " + s);
     }
 
     public TinyRpcSystemException(String s) {
