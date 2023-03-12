@@ -1,7 +1,7 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.codec.TinyPBDecoder;
-import com.iker.tinyrpc.codec.TinyPBEncoder;
+import com.iker.tinyrpc.net.codec.TinyPBDecoder;
+import com.iker.tinyrpc.net.codec.TinyPBEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;

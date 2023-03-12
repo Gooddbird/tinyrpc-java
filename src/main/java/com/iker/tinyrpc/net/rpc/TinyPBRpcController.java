@@ -63,13 +63,11 @@ public class TinyPBRpcController implements RpcController {
      * show rpc progress is failed
      */
     @Getter
-    @Setter
     private boolean isFailed;
 
     /**
      * show is cancel rpc progress
      */
-    @Getter
     @Setter
     private boolean isCanceled;
 
@@ -95,7 +93,8 @@ public class TinyPBRpcController implements RpcController {
 
     @Override
     public void setFailed(String reason) {
-
+        errInfo = reason;
+        isFailed = true;
     }
 
     @Override

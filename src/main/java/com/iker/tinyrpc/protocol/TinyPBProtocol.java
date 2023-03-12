@@ -25,7 +25,7 @@ public class TinyPBProtocol extends AbstractProtocol {
     private int msgReqLen;  // length of msgReq
 
     @Getter
-    private String msgReq;  // identify a request or response
+    private String msgReq = "";  // identify a request or response
 
     public void setMsgReq(String msgReq) {
         this.msgReq = msgReq;
@@ -36,7 +36,7 @@ public class TinyPBProtocol extends AbstractProtocol {
     private int serviceNameLen; // length of service name
 
     @Getter
-    private String serviceName; // service full name, like QueryService.query_name
+    private String serviceName = ""; // service full name, like QueryService.query_name
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
@@ -51,7 +51,7 @@ public class TinyPBProtocol extends AbstractProtocol {
     private int errInfoLen;  // length of error info
 
     @Getter
-    private String errInfo;  // error detail info of Rpc, empty -- when call rpc success
+    private String errInfo = "";  // error detail info of Rpc, empty -- when call rpc success
 
     public void setErrInfo(String errInfo) {
         this.errInfo = errInfo;
@@ -60,7 +60,7 @@ public class TinyPBProtocol extends AbstractProtocol {
 
     @Getter
     @Setter
-    private String pbData;  // protobuf message object serialized bytes
+    private String pbData = "";  // protobuf message object serialized bytes
 
     @Getter
     @Setter

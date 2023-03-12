@@ -9,66 +9,55 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 
 
 @Slf4j
 public class TcpServer {
     @Getter
-    @Setter
-    private EventLoopGroup mainLoopGroup;       // mainReactor
+    private final EventLoopGroup mainLoopGroup;       // mainReactor
 
     @Getter
-    @Setter
-    private EventLoopGroup workerLoopGroup;     // io subReactors
+    private final EventLoopGroup workerLoopGroup;     // io subReactors
 
     @Getter
-    private InetSocketAddress localAddress;
+    private final InetSocketAddress localAddress;
 
-    public void start(InetSocketAddress localAddress) throws InterruptedException, TinyRpcSystemException {
-        try {
-            if(this.localAddress != null) {
-                throw new TinyRpcSystemException("TinyRPC TcpServer start error, local address has set.");
-            }
-            this.localAddress = localAddress;
-
-            workerLoopGroup = new NioEventLoopGroup(4);
-            mainLoopGroup = new NioEventLoopGroup(1);
-
-            ServerBootstrap serverBootstrap = new ServerBootstrap()
-                    .group(mainLoopGroup, workerLoopGroup)
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new TcpServerChannelInitializer())
-                    .localAddress(localAddress);
-
-            ChannelFuture channelFuture = serverBootstrap.bind().sync();
-            channelFuture.addListener((ChannelFutureListener) future -> {
-                if (future.isSuccess()) {
-                    InetSocketAddress address = (InetSocketAddress)future.channel().localAddress();
-                    assert (address != null);
-                    log.info(String.format("TinyRPC TcpServer start success, listen on [%s:%d]", getLocalAddress().getHostString(),  getLocalAddress().getPort()));
-                } else {
-                    log.error("TinyRPC TcpServer start error");
-                    future.cause().printStackTrace();
-                    throw new TinyRpcSystemException(future.cause().getMessage());
-                }
-            });
-
-            // wait until close this channel
-            channelFuture.channel().closeFuture().sync();
-            log.info("TinyRPC quit success");
-        } catch (InterruptedException e) {
-            throw e;
-        } finally {
-            mainLoopGroup.shutdownGracefully().sync();
-            workerLoopGroup.shutdownGracefully().sync();
-        }
-
+    public TcpServer(InetSocketAddress address, int mainLoopGroupSize, int workerLoopGroupSize) {
+        localAddress = address;
+        mainLoopGroup = new NioEventLoopGroup(mainLoopGroupSize);
+        workerLoopGroup = new NioEventLoopGroup(workerLoopGroupSize);
     }
+
+    public void start() throws InterruptedException {
+        ServerBootstrap serverBootstrap = new ServerBootstrap()
+                .group(mainLoopGroup, workerLoopGroup)
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new TcpServerChannelInitializer())
+                .localAddress(localAddress);
+
+        ChannelFuture channelFuture = serverBootstrap.bind().sync();
+        channelFuture.addListener((ChannelFutureListener) future -> {
+            if(future.isSuccess()){
+                InetSocketAddress address = (InetSocketAddress) future.channel().localAddress();
+                assert (address != null);
+                log.info(String.format("TinyRPC TcpServer start success, listen on [%s:%d]", getLocalAddress().getHostString(), getLocalAddress().getPort()));
+            } else {
+                log.error("TinyRPC TcpServer start error");
+                future.cause().printStackTrace();
+                throw new RuntimeException(future.cause().getMessage());
+            }
+        });
+
+        // wait until close this channel
+        channelFuture.channel().closeFuture().sync();
+        log.info("TinyRPC quit success");
+
+        mainLoopGroup.shutdownGracefully().sync();
+        workerLoopGroup.shutdownGracefully().sync();
+    }
+
+
 }
