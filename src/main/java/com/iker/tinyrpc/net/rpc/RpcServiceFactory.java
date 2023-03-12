@@ -19,6 +19,15 @@ public class RpcServiceFactory {
                     throw new RuntimeException("register error, service object null");
                 }
         ).getClass().getSuperclass().getSimpleName();
+        registerService(key, object);
+    }
+
+    public void registerService(String key, Object object) throws RuntimeException {
+        Optional.ofNullable(key).<RuntimeException>orElseThrow(
+                () -> {
+                    throw new RuntimeException("register error, key is null");
+                }
+        );
 
         if (rpcServiceMap.containsKey(key)) {
             throw new RuntimeException(String.format("registerService error, key %s exist", key));
