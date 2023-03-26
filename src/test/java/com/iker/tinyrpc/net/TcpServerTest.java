@@ -32,10 +32,6 @@ class TcpServerTest {
     void start() {
         try {
             TcpServer tcpServer = new TcpServer(new InetSocketAddress(12345), 1, 4);
-            AnnotationContextHandler annotationContextHandler = new AnnotationContextHandler("com.iker.tinyrpc");
-            annotationContextHandler.ScanAnnotation();
-//            QueryServiceHandler queryServiceHandler = new QueryServiceHandler();
-//            SpringContextUtil.getBean("rpcServiceFactory", RpcServiceFactory.class).registerService(queryServiceHandler);
             tcpServer.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
