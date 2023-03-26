@@ -5,9 +5,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.Charset;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -25,7 +28,7 @@ public class TinyPBEncoder extends MessageToByteEncoder {
     @Override
     @SneakyThrows(IndexOutOfBoundsException.class)
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) {
-        log.debug("begin to do TinyPBEncoder.encode");
+        log.info("begin to do TinyPBEncoder.encode");
         TinyPBProtocol protocol = (TinyPBProtocol) msg;
         if (protocol == null) {
             log.error("object convert to TinyPBProtocol get null");
@@ -43,10 +46,11 @@ public class TinyPBEncoder extends MessageToByteEncoder {
         out.writeInt(protocol.getErrCode());
         out.writeInt(protocol.getErrInfoLen());
         out.writeBytes(protocol.getErrInfo().getBytes());
-        out.writeBytes(protocol.getPbData().getBytes());
+        out.writeBytes(protocol.getPbData().getBytes(CharsetUtil.ISO_8859_1));
         out.writeInt(protocol.getCheckSum());
         out.writeByte(TinyPBProtocol.getPbEnd());       // set end flag
 
-        log.debug("end TinyPBEncoder.encode");
+        log.info(String.format("success encode a package of msgReq[%s], total bytes size[%d]", protocol.getMsgReq(), out.readableBytes()));
+        log.info("end TinyPBEncoder.encode");
     }
 }

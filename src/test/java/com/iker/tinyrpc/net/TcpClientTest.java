@@ -1,8 +1,6 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.annotation.AnnotationContextHandler;
 import com.iker.tinyrpc.proto.queryNameReq;
-import com.iker.tinyrpc.proto.queryNameRes;
 import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,11 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
-
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
@@ -41,12 +36,17 @@ class TcpClientTest {
         queryNameReq request = queryNameReq.newBuilder().setReqNo(999).setId(1).build();
 
         TinyPBProtocol protocol = new TinyPBProtocol();
-        protocol.setPbData(String.valueOf(request.toByteString()));
+        try {
+            protocol.setPbData(request.toByteString().toString("ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        };
         String msgReq = "1234567890";
         protocol.setMsgReq(msgReq);
         String serviceName = "QueryService.query_name";
         protocol.setServiceName(serviceName);
         protocol.resetPackageLen();
+        log.info(String.format("package length is %d", protocol.getPkLen()));
         return protocol;
     }
 

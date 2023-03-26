@@ -15,9 +15,10 @@ public class TcpClientChannelInitializer extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
-                .addLast("decoder", new TinyPBDecoder())
-                .addLast("inboundHandlerAdapter", new TcpClientChannelInboundHandler())
-                .addLast("encoder", new TinyPBEncoder())
+                .addLast("tinyPBDecoder", new TinyPBDecoder())
+                .addLast("inBoundHandler", new TcpClientChannelInboundHandler())
+                .addLast("tinyPBEncoder", new TinyPBEncoder())
+                .addLast("outBoundHandler", new TcpClientChannelOutboundHandler())
                 .addLast("exceptionHandler", new TcpServerExceptionHandler());
     }
 }

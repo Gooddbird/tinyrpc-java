@@ -48,13 +48,13 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int end = start + packageLen - 1;
             if (end >= in.writerIndex()) {
-                log.debug(String.format("read less bytes than packageLen [%d]", packageLen));
+                log.info(String.format("read less bytes than packageLen [%d]", packageLen));
                 from = start + 1;
                 continue;
             }
 
             if (in.getByte(end) != TinyPBProtocol.getPbEnd()) {
-                log.debug("read end index is not PbEnd(0x03)");
+                log.info("read end index is not PbEnd(0x03)");
                 from = start + 1;
                 continue;
             }
@@ -114,11 +114,12 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             request.setErrInfo(String.valueOf(in.getCharSequence(errInfoIndex, errInfoLen, CharsetUtil.UTF_8)));
 
             int pbDataIndex = errInfoIndex + errInfoLen;
-            request.setPbData(String.valueOf(in.getCharSequence(pbDataIndex, end - pbDataIndex - 4, CharsetUtil.UTF_8)));
+            request.setPbData(String.valueOf(in.getCharSequence(pbDataIndex, end - pbDataIndex - 4, CharsetUtil.ISO_8859_1)));
 
             int checkSumIndex = end - 4;
             request.setCheckSum(in.getInt(checkSumIndex));
             out.add(request);
+            log.info(String.format("success decode a TinyPBProtocol of msgReq[%s]", request.getMsgReq()));
         }
         log.info("end TinyPBDecoder.decode");
     }
