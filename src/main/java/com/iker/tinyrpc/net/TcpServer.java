@@ -12,8 +12,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
@@ -21,22 +23,25 @@ import java.util.Set;
 
 
 @Slf4j
+@Component
 public class TcpServer {
     @Getter
-    private final EventLoopGroup mainLoopGroup;       // mainReactor
+    private EventLoopGroup mainLoopGroup;       // mainReactor
 
     @Getter
-    private final EventLoopGroup workerLoopGroup;     // io subReactors
+    private EventLoopGroup workerLoopGroup;     // io subReactors
 
     @Getter
-    private final InetSocketAddress localAddress;
+    @Setter
+    private InetSocketAddress localAddress;
 
-    public TcpServer(InetSocketAddress address, int mainLoopGroupSize, int workerLoopGroupSize) {
-        localAddress = address;
-        mainLoopGroup = new NioEventLoopGroup(mainLoopGroupSize);
-        workerLoopGroup = new NioEventLoopGroup(workerLoopGroupSize);
+    public void setMainLoopGroupSize(int size) {
+        mainLoopGroup = new NioEventLoopGroup(size);
     }
 
+    public void setWorkerLoopGroupSize(int size) {
+        workerLoopGroup = new NioEventLoopGroup(size);
+    }
 
     public void registerService() {
         AnnotationContextHandler annotationContextHandler = new AnnotationContextHandler("com.iker.tinyrpc");

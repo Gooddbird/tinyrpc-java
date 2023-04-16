@@ -158,8 +158,8 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
         log.info("exceptionCaught, remote addr: " + address.getHostString());
+        super.exceptionCaught(ctx, cause);
     }
 }

@@ -31,8 +31,12 @@ class TcpServerTest {
     @Test
     void start() {
         try {
-            TcpServer tcpServer = new TcpServer(new InetSocketAddress(12345), 1, 4);
+            TcpServer tcpServer = SpringContextUtil.getBean("tcpServer", TcpServer.class);
+            tcpServer.setMainLoopGroupSize(1);
+            tcpServer.setWorkerLoopGroupSize(4);
+            tcpServer.setLocalAddress(new InetSocketAddress(12345));
             tcpServer.start();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

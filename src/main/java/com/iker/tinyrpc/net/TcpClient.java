@@ -92,4 +92,8 @@ public class TcpClient {
         return channel.writeAndFlush(protocol);
     }
 
+    public ChannelFuture awaitResponseWithTimeout(String msgReq) {
+        channel.
+    }
+
 }

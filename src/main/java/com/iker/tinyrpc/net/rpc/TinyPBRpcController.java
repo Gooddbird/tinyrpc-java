@@ -2,6 +2,7 @@ package com.iker.tinyrpc.net.rpc;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
+import com.iker.tinyrpc.util.TinyPBErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +15,7 @@ public class TinyPBRpcController implements RpcController {
      */
     @Getter
     @Setter
-    private int errCode;
+    private TinyPBErrorCode errCode;
 
     /**
      * error_info, details description of error
@@ -73,7 +74,15 @@ public class TinyPBRpcController implements RpcController {
 
     @Override
     public void reset() {
-
+        isCanceled = false;
+        isFailed = false;
+        peerAddr = null;
+        localAddr = null;
+        methodName = null;
+        methodFullName = null;
+        msgReq = null;
+        errCode = null;
+        errInfo = null;
     }
 
     @Override
