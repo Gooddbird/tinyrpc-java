@@ -92,8 +92,8 @@ public class TcpClient {
         return channel.writeAndFlush(protocol);
     }
 
-    public ChannelFuture awaitResponseWithTimeout(String msgReq) {
-        channel.
+    public void awaitResponseWithTimeout(String msgReq) throws InterruptedException {
+        channel.newPromise().sync();
     }
 
 }
