@@ -1,7 +1,7 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.net.rpc.TinyPBRpcDispatcher;
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBRpcDispatcher;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import com.iker.tinyrpc.util.SpringContextUtil;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;

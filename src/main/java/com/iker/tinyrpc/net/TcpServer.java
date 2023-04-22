@@ -2,7 +2,7 @@ package com.iker.tinyrpc.net;
 
 import com.iker.tinyrpc.annotation.AnnotationContextHandler;
 import com.iker.tinyrpc.annotation.TinyPBService;
-import com.iker.tinyrpc.net.rpc.RpcServiceFactory;
+import com.iker.tinyrpc.net.rpc.protobuf.ProtobufRpcServiceFactory;
 import com.iker.tinyrpc.util.SpringContextUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -23,7 +23,7 @@ import java.util.Set;
 
 
 @Slf4j
-@Component
+@Component(value = "tinyrpc-TcpServer")
 public class TcpServer {
     @Getter
     private EventLoopGroup mainLoopGroup;       // mainReactor
@@ -63,7 +63,7 @@ public class TcpServer {
             SpringContextUtil.getBeanFactory().registerBeanDefinition(item.getName(), beanDefinition);
 
             // 2. get this bean, then register to RpcServiceFactory
-            SpringContextUtil.getBean("rpcServiceFactory", RpcServiceFactory.class).registerService(name, SpringContextUtil.getBean(item.getName()));
+            SpringContextUtil.getBean("tinyrpc-ProtobufRpcServiceFactory", ProtobufRpcServiceFactory.class).registerService(name, SpringContextUtil.getBean(item.getName()));
 
         }
     }

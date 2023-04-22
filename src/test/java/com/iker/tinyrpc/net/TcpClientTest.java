@@ -1,7 +1,11 @@
 package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcController;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcSyncChannel;
+import com.iker.tinyrpc.proto.QueryService;
 import com.iker.tinyrpc.proto.queryNameReq;
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.proto.queryNameRes;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
@@ -62,5 +66,19 @@ class TcpClientTest {
         tcpClient.sendMessage(protocol);
 
         Thread.sleep(100000);
+    }
+
+    @Test
+    void callMethod() {
+        queryNameReq request = queryNameReq.newBuilder().setReqNo(999).setId(1).build();
+        queryNameRes response = queryNameRes.newBuilder().build();
+        TinyRpcSyncChannel tinyRpcSyncChannel = new TinyRpcSyncChannel(new InetSocketAddress("0.0.0.0", 12345));
+        TinyRpcController rpcController = new TinyRpcController();
+
+
+        log.info(String.format("request info : %s", request));
+        tinyRpcSyncChannel.callMethod(QueryService.getDescriptor().findMethodByName("query_name"), rpcController, request, response, null);
+
+        log.info(String.format("get response info : %s", response));
     }
 }

@@ -1,4 +1,4 @@
-package com.iker.tinyrpc.net.rpc;
+package com.iker.tinyrpc.net.rpc.protobuf;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Component
+@Component("tinyrpc-ProtobufRpcServiceFactory")
 @Slf4j
-public class RpcServiceFactory {
+public class ProtobufRpcServiceFactory {
 
     private final Map<String, Object> rpcServiceMap = new HashMap<>();
 

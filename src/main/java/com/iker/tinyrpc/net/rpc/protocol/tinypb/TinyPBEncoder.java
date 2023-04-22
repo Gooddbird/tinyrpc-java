@@ -1,6 +1,5 @@
-package com.iker.tinyrpc.net.codec;
+package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,9 +7,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import java.nio.charset.Charset;
 
 @Slf4j
 @ChannelHandler.Sharable

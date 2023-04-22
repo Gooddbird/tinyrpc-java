@@ -1,4 +1,4 @@
-package com.iker.tinyrpc.net.rpc;
+package com.iker.tinyrpc.net.rpc.protobuf;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import java.net.InetSocketAddress;
 
-public class TinyPBRpcController implements RpcController {
+public class TinyRpcController implements RpcController {
 
     /**
      * error_code, identify one specific error
@@ -22,28 +22,28 @@ public class TinyPBRpcController implements RpcController {
      */
     @Getter
     @Setter
-    private String errInfo;
+    private String errInfo = "";
 
     /**
      * msg_req, identify once rpc request and response
      */
     @Getter
     @Setter
-    private String msgReq;
+    private String msgReq = "";
 
     /**
      * methodName of rpc call, such as queryName
      */
     @Getter
     @Setter
-    private String methodName;
+    private String methodName = "";
 
     /**
      * methodFullName of rpc call, such as QueryService.queryName
      */
     @Getter
     @Setter
-    private String methodFullName;
+    private String methodFullName = "";
 
     /**
      * localAddr of rpc call

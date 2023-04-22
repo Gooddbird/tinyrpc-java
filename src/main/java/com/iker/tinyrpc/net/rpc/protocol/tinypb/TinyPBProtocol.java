@@ -1,5 +1,6 @@
-package com.iker.tinyrpc.protocol;
+package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
+import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,16 +22,6 @@ public class TinyPBProtocol extends AbstractProtocol {
     @Setter
     private int pkLen;      // length of all package
 
-    @Getter
-    private int msgReqLen;  // length of msgReq
-
-    @Getter
-    private String msgReq = "";  // identify a request or response
-
-    public void setMsgReq(String msgReq) {
-        this.msgReq = msgReq;
-        msgReqLen = msgReq.length();
-    }
 
     @Getter
     private int serviceNameLen; // length of service name

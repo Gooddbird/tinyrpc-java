@@ -1,8 +1,14 @@
 package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.net.rpc.RpcFutureFactory;
+import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
+import com.iker.tinyrpc.util.SpringContextUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 
 @Slf4j
@@ -59,6 +65,12 @@ public class TcpClientChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        Optional.ofNullable((TinyPBProtocol) msg).ifPresent(
+                (protocol) -> {
+                    log.info(String.format("success get reply protocol of msgReq [%s]", protocol.getMsgReq()));
+                    SpringContextUtil.getApplicationContext().getBean("tinyrpc-rpcFutureFactory", RpcFutureFactory.class).getFuture(protocol.getMsgReq()).setResponse(protocol);
+                }
+        );
         super.channelRead(ctx, msg);
     }
 

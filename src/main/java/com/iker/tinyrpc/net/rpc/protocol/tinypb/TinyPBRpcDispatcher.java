@@ -1,8 +1,10 @@
-package com.iker.tinyrpc.net.rpc;
+package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
 import com.google.protobuf.*;
-import com.iker.tinyrpc.protocol.AbstractProtocol;
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.net.rpc.RpcDispatcher;
+import com.iker.tinyrpc.net.rpc.protobuf.ProtobufRpcServiceFactory;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcController;
+import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
 import com.iker.tinyrpc.util.SpringContextUtil;
 import com.iker.tinyrpc.util.TinyRpcSystemException;
 
@@ -19,7 +21,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class TinyPBRpcDispatcher extends AbstractRpcDispatcher {
+public class TinyPBRpcDispatcher implements RpcDispatcher {
 
     @Override
     public void dispatch(AbstractProtocol protocol, Channel channel) throws RuntimeException {
@@ -40,7 +42,7 @@ public class TinyPBRpcDispatcher extends AbstractRpcDispatcher {
             log.info(String.format("get serviceName [%s], get methodName [%s] from rpc request of msgReq[%s]", serviceName, methodName, msgReq));
 
             // get RPC protobuf service object
-            Service service = (Service) SpringContextUtil.getBean("rpcServiceFactory", RpcServiceFactory.class).getService(serviceName).<TinyRpcSystemException>orElseThrow(
+            Service service = (Service) SpringContextUtil.getBean("tinyrpc-ProtobufRpcServiceFactory", ProtobufRpcServiceFactory.class).getService(serviceName).<TinyRpcSystemException>orElseThrow(
                     () -> {
                         throw new TinyRpcSystemException(TinyPBErrorCode.ERROR_SERVICE_NOT_FOUND, String.format("rpc request of msgReq [%s] not found service name of [%s]", msgReq, serviceName));
                     }
@@ -53,7 +55,7 @@ public class TinyPBRpcDispatcher extends AbstractRpcDispatcher {
                     }
             );
 
-            TinyPBRpcController rpcController = new TinyPBRpcController();
+            TinyRpcController rpcController = new TinyRpcController();
             rpcController.setMsgReq(tinyPBProtocol.getMsgReq());
             rpcController.setMethodFullName(tinyPBProtocol.getServiceName());
             rpcController.setMethodName(methodName);

@@ -1,6 +1,6 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.protocol.AbstractProtocol;
+import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
 import com.iker.tinyrpc.util.TinyRpcSystemException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -41,17 +41,13 @@ public class TcpClient {
         this.eventLoopGroup = eventLoopGroup;
     }
 
-    public void connect() throws InterruptedException, TinyRpcSystemException {
-        if (this.peerAddress == null) {
-            throw new TinyRpcSystemException("connect failed, not set peerAddress");
-        }
+    public void connect() {
+        assert (peerAddress != null);
         connect(this.peerAddress);
     }
 
-    public void connect(InetSocketAddress peerAddress) throws TinyRpcSystemException {
-        if (this.peerAddress != null) {
-            throw new TinyRpcSystemException("init client failed, peerAddress has already set");
-        }
+    public void connect(InetSocketAddress peerAddress) {
+        assert (peerAddress != null);
         this.peerAddress = peerAddress;
 
         Bootstrap bootstrap = new Bootstrap();
@@ -83,7 +79,7 @@ public class TcpClient {
             try {
                 connectChannelFuture.sync();
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new TinyRpcSystemException(e.getMessage());
             }
         }
         if (!channel.isActive()) {

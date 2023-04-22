@@ -2,9 +2,14 @@ package com.iker.tinyrpc.util;
 
 public enum TinyPBErrorCode {
     /**
+     * unknown error
+     */
+    ERROR_UNKNOWN(10000000),
+
+    /**
      * failed to connection peer host
      */
-    ERROR_FAILED_CONNECT(10000002),
+    ERROR_FAILED_CONNECT(10000001),
 
     /**
      * failed to get server reply

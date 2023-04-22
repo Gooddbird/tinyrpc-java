@@ -1,6 +1,5 @@
-package com.iker.tinyrpc.net.codec;
+package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
 import com.iker.tinyrpc.util.TinyPBErrorCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,7 +25,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
      */
     @Override
     @SneakyThrows(IndexOutOfBoundsException.class)
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int from = in.readerIndex();
         log.info("begin to do TinyPBDecoder.decode");
         while (in.isReadable()) {

@@ -15,14 +15,14 @@ public class QueryServiceHandler extends com.iker.tinyrpc.proto.QueryService {
 
     @Override
     public void queryName(RpcController controller, queryNameReq request, RpcCallback<queryNameRes> done) {
-        queryNameRes response = queryNameRes.newBuilder().build();
+        queryNameRes response = queryNameRes.newBuilder().setName("tinyrpc-test-queryNameMethod").setId(8888).build();
         log.info("call method queryName successful");
         done.run(response);
     }
 
     @Override
     public void queryAge(RpcController controller, queryAgeReq request, RpcCallback<queryAgeRes> done) {
-        queryAgeRes response = queryAgeRes.newBuilder().build();
+        queryAgeRes response = queryAgeRes.newBuilder().setAge(9999).setId(8888).build();
         log.info("call method queryAge successful");
         done.run(response);
     }

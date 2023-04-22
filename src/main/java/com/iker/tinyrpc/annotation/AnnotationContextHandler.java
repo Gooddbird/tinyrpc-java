@@ -1,12 +1,9 @@
 package com.iker.tinyrpc.annotation;
 
-import com.iker.tinyrpc.net.rpc.RpcServiceFactory;
-import com.iker.tinyrpc.util.SpringContextUtil;
 import lombok.Getter;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
-import java.util.Optional;
 import java.util.Set;
 
 public class AnnotationContextHandler {
@@ -35,7 +32,7 @@ public class AnnotationContextHandler {
 //            }
 //
 //            try {
-//                SpringContextUtil.getBean("rpcServiceFactory", RpcServiceFactory.class).registerService(name, item.newInstance());
+//                SpringContextUtil.getBean("rpcServiceFactory", ProtobufRpcServiceFactory.class).registerService(name, item.newInstance());
 //            } catch (InstantiationException | IllegalAccessException e) {
 //                throw new RuntimeException(e);
 //            }

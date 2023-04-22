@@ -1,9 +1,10 @@
 package com.iker.tinyrpc.net.codec;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBDecoder;
 import com.iker.tinyrpc.proto.queryAgeReq;
 import com.iker.tinyrpc.proto.queryNameReq;
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static io.netty.buffer.Unpooled.buffer;

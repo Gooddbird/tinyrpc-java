@@ -1,9 +1,9 @@
 package com.iker.tinyrpc.net.rpc;
 
-import com.iker.tinyrpc.protocol.AbstractProtocol;
+import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
 import io.netty.channel.Channel;
 
-public abstract class AbstractRpcDispatcher {
+public interface RpcDispatcher {
     /**
      * @param protocol protocol object, such as TinyPBProtocol
      * @throws RuntimeException
