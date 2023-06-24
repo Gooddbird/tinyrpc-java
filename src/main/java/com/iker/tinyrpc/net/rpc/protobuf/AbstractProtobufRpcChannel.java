@@ -5,8 +5,9 @@ import com.iker.tinyrpc.net.TcpClient;
 import com.iker.tinyrpc.net.TcpServer;
 import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import com.iker.tinyrpc.util.SpringContextUtil;
-import com.iker.tinyrpc.util.TinyPBErrorCode;
+import com.iker.tinyrpc.util.TinyRpcErrorCode;
 import com.iker.tinyrpc.util.TinyRpcSystemException;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,41 +28,49 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
 
     protected TcpClient tcpClient;
 
+    protected RpcCallback<Message> done;
+
+    protected Message request;
+
+    protected Message responsePrototype;
+
     public AbstractProtobufRpcChannel(InetSocketAddress peerAddr) {
         this.peerAddr = peerAddr;
     }
 
+
     @Override
     public void callMethod(Descriptors.MethodDescriptor method, RpcController controller, Message request, Message responsePrototype, RpcCallback<Message> done) {
         try {
-
-            assert (method != null);
-
-            tinyRpcController = (TinyRpcController) controller;
-
-            fillRpcController(method);
+            init(controller, request, responsePrototype, done);
 
             generateTinyPBProtocol(request);
 
-            // do async connect
-            ioHandler();
+            fillRpcController(method);
 
-            fillResponse(responsePrototype);
+            ioHandler();
 
         } catch (TinyRpcSystemException e) {
             log.error(String.format("call rpc occur TinyRpcSystemException, error code [%d], error info [%s]", e.getErrorCode().ordinal(), e.getErrorInfo()));
+            log.error("exception: ", e);
             tinyRpcController.setErrCode(e.getErrorCode());
             tinyRpcController.setFailed(e.getErrorInfo());
-        } catch (InvalidProtocolBufferException e) {
-            log.error(String.format("call rpc occur InvalidProtocolBufferException, error info [%s]", e.getMessage()));
-            tinyRpcController.setErrCode(TinyPBErrorCode.ERROR_FAILED_DESERIALIZE);
-            tinyRpcController.setFailed("failed to deserialize response protobuf data");
+            callBack();
         }
-//        } catch (RuntimeException e) {
-//            log.error(String.format("call rpc occur Unknown RuntimeException, error info [%s]", e.getMessage()));
-//            tinyRpcController.setErrCode(TinyPBErrorCode.ERROR_UNKNOWN);
-//            tinyRpcController.setFailed(String.format("unknown exception, error info: %s", e.getMessage()));
+//        } catch (InvalidProtocolBufferException e) {
+//            log.error(String.format("call rpc occur InvalidProtocolBufferException, error info [%s]", e.getMessage()));
+//            log.error("exception: ", e);
+//            tinyRpcController.setErrCode(TinyRpcErrorCode.ERROR_FAILED_DESERIALIZE);
+//            tinyRpcController.setFailed("failed to deserialize response protobuf data");
+//            callBack();
 //        }
+    }
+
+    private void init(RpcController controller, Message request, Message responsePrototype, RpcCallback<Message> done) {
+        this.request = request;
+        this.responsePrototype = responsePrototype;
+        this.done = done;
+        tinyRpcController = (TinyRpcController) controller;
     }
 
     protected void fillRpcController(Descriptors.MethodDescriptor method) {
@@ -76,10 +85,15 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
 
     }
 
-    protected void fillResponse(Message responsePrototype) throws InvalidProtocolBufferException {
+    protected Message parseResponse(Message responsePrototype) {
         if (replyProtocol != null) {
-            responsePrototype.toBuilder().mergeFrom(ByteString.copyFrom(replyProtocol.getPbData(), StandardCharsets.ISO_8859_1)).build();
+            try {
+                return responsePrototype.toBuilder().mergeFrom(ByteString.copyFrom(replyProtocol.getPbData(), StandardCharsets.ISO_8859_1)).build();
+            } catch (InvalidProtocolBufferException e) {
+                throw new RuntimeException(e);
+            }
         }
+        return null;
     }
 
 
@@ -91,19 +105,40 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
         try {
             sendProtocol.setPbData(request.toByteString().toString("ISO-8859-1"));
         } catch (UnsupportedEncodingException e) {
-            throw new TinyRpcSystemException(TinyPBErrorCode.ERROR_FAILED_DESERIALIZE, "failed to deserialize request data");
+            throw new TinyRpcSystemException(TinyRpcErrorCode.ERROR_FAILED_DESERIALIZE, "failed to deserialize request data");
         }
         sendProtocol.setServiceName(tinyRpcController.getMethodFullName());
         sendProtocol.resetPackageLen();
 
+        replyProtocol = new TinyPBProtocol();
+        replyProtocol.setMsgReq(sendProtocol.getMsgReq());
+        replyProtocol.setServiceName(sendProtocol.getServiceName());
+
     }
 
-    protected void asyncConnect() {
-        tcpClient = new TcpClient(peerAddr, Optional.ofNullable(SpringContextUtil.getBean("tinyrpc-TcpServer", TcpServer.class).getWorkerLoopGroup()).orElse(
+    protected ChannelFuture asyncConnect() {
+        tcpClient = new TcpClient(peerAddr, Optional.ofNullable(SpringContextUtil.getBean(TcpServer.class).getWorkerLoopGroup()).orElse(
                 new NioEventLoopGroup(1)
         ).next());
 
-        tcpClient.connect();
+        return tcpClient.connect();
+    }
+
+    protected ChannelFuture asyncSendMessage() {
+        return tcpClient.sendMessage(sendProtocol);
+    }
+
+    protected void setError(TinyRpcErrorCode errorCode, String errorInfo) {
+        tinyRpcController.setErrCode(errorCode);
+        tinyRpcController.setErrInfo(errorInfo);
+        tinyRpcController.setFailed(errorInfo);
+    }
+
+    protected void callBack() {
+        if (done != null) {
+            log.info("now callback");
+            done.run(responsePrototype);
+        }
     }
 
 

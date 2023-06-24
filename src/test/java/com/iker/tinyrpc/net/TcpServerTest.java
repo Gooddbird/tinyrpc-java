@@ -25,9 +25,9 @@ class TcpServerTest {
     @Test
     void start() {
         try {
-            TcpServer tcpServer = SpringContextUtil.getBean("tinyrpc-TcpServer", TcpServer.class);
-            tcpServer.setMainLoopGroupSize(1);
-            tcpServer.setWorkerLoopGroupSize(4);
+            TcpServer tcpServer = SpringContextUtil.getBean(TcpServer.class);
+            tcpServer.initMainLoopGroup(1);
+            tcpServer.initWorkerLoopGroup(4);
             tcpServer.setLocalAddress(new InetSocketAddress(12345));
             tcpServer.start();
 

@@ -23,7 +23,7 @@ import java.util.Set;
 
 
 @Slf4j
-@Component(value = "tinyrpc-TcpServer")
+@Component
 public class TcpServer {
     @Getter
     private EventLoopGroup mainLoopGroup;       // mainReactor
@@ -33,13 +33,13 @@ public class TcpServer {
 
     @Getter
     @Setter
-    private InetSocketAddress localAddress;
+    private InetSocketAddress localAddress;     // listen addr
 
-    public void setMainLoopGroupSize(int size) {
+    public void initMainLoopGroup(int size) {
         mainLoopGroup = new NioEventLoopGroup(size);
     }
 
-    public void setWorkerLoopGroupSize(int size) {
+    public void initWorkerLoopGroup(int size) {
         workerLoopGroup = new NioEventLoopGroup(size);
     }
 
@@ -63,7 +63,7 @@ public class TcpServer {
             SpringContextUtil.getBeanFactory().registerBeanDefinition(item.getName(), beanDefinition);
 
             // 2. get this bean, then register to RpcServiceFactory
-            SpringContextUtil.getBean("tinyrpc-ProtobufRpcServiceFactory", ProtobufRpcServiceFactory.class).registerService(name, SpringContextUtil.getBean(item.getName()));
+            SpringContextUtil.getBean(ProtobufRpcServiceFactory.class).registerService(name, SpringContextUtil.getBean(item));
 
         }
     }
@@ -87,7 +87,7 @@ public class TcpServer {
                 log.info(String.format("TinyRPC TcpServer start success, listen on [%s:%d]", getLocalAddress().getHostString(), getLocalAddress().getPort()));
             } else {
                 log.error("TinyRPC TcpServer start error");
-                future.cause().printStackTrace();
+                log.error("exception:", future.cause());
                 throw new RuntimeException(future.cause().getMessage());
             }
         });

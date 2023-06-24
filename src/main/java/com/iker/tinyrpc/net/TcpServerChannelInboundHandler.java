@@ -95,7 +95,7 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
         Optional.ofNullable((TinyPBProtocol) msg).ifPresent(
                 (protocol) -> {
                     log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
-                    SpringContextUtil.getApplicationContext().getBean("tinyPBRpcDispatcher", TinyPBRpcDispatcher.class).dispatch(protocol, ctx.channel());
+                    SpringContextUtil.getApplicationContext().getBean(TinyPBRpcDispatcher.class).dispatch(protocol, ctx.channel());
                 }
         );
 

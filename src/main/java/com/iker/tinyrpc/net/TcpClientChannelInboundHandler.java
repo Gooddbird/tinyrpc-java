@@ -1,8 +1,7 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.net.rpc.RpcFutureFactory;
-import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
-import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
+import com.iker.tinyrpc.net.rpc.RpcFutureMap;
+import com.iker.tinyrpc.net.rpc.protocol.RpcProtocol;
 import com.iker.tinyrpc.util.SpringContextUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -55,6 +54,7 @@ public class TcpClientChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.debug("channelInactive{}", ctx.channel().remoteAddress());
         super.channelInactive(ctx);
     }
 
@@ -65,41 +65,14 @@ public class TcpClientChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Optional.ofNullable((TinyPBProtocol) msg).ifPresent(
+        log.debug("channelRead{}", ctx.channel().remoteAddress().toString());
+        Optional.ofNullable((RpcProtocol) msg).ifPresent(
                 (protocol) -> {
                     log.info(String.format("success get reply protocol of msgReq [%s]", protocol.getMsgReq()));
-                    SpringContextUtil.getApplicationContext().getBean("tinyrpc-rpcFutureFactory", RpcFutureFactory.class).getFuture(protocol.getMsgReq()).setResponse(protocol);
+                    SpringContextUtil.getApplicationContext().getBean(RpcFutureMap.class).getFuture(ctx.channel().id() + "-" + protocol.getMsgReq()).invoke(protocol);
                 }
         );
         super.channelRead(ctx, msg);
-    }
-
-    /**
-     * @param ctx
-     * @throws Exception
-     */
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        super.channelReadComplete(ctx);
-    }
-
-    /**
-     * @param ctx
-     * @param evt
-     * @throws Exception
-     */
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        super.userEventTriggered(ctx, evt);
-    }
-
-    /**
-     * @param ctx
-     * @throws Exception
-     */
-    @Override
-    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
-        super.channelWritabilityChanged(ctx);
     }
 
     /**

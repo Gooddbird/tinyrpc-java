@@ -31,8 +31,8 @@ class TcpClientTest {
 
     TcpClient genTcpClient() {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
-        TcpClient tcpClient = new TcpClient(eventLoopGroup);
-        tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
+        TcpClient tcpClient = new TcpClient(new InetSocketAddress("0.0.0.0", 12345), eventLoopGroup);
+        tcpClient.connect();
         return tcpClient;
     }
 

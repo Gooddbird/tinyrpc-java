@@ -9,14 +9,14 @@ public class TinyRpcSystemException extends RuntimeException {
 
     @Getter
     @Setter
-    private TinyPBErrorCode errorCode;
+    private TinyRpcErrorCode errorCode;
 
     @Getter
     @Setter
     private String errorInfo;
 
 
-    public TinyRpcSystemException(TinyPBErrorCode errorFailedDecode, String s) {
+    public TinyRpcSystemException(TinyRpcErrorCode errorFailedDecode, String s) {
         super("Error code: " + errorFailedDecode.name() + ", Error info: " + s);
         setErrorCode(errorFailedDecode);
         setErrorInfo(s);

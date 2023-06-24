@@ -1,6 +1,6 @@
 package com.iker.tinyrpc.util;
 
-public enum TinyPBErrorCode {
+public enum TinyRpcErrorCode {
     /**
      * unknown error
      */
@@ -47,10 +47,7 @@ public enum TinyPBErrorCode {
      * parse service full name error
      */
     ERROR_PARSE_SERVICE_NAME(10000010),
-    /**
-     * didn't set some necessary param before call async rpc, it only happened on tinyrpc-cpp
-     */
-    ERROR_NOT_SET_ASYNC_PRE_CALL(10000011),
+
     /**
      * connect peer addr sys error
      */
@@ -59,9 +56,14 @@ public enum TinyPBErrorCode {
     /**
      * execute rpc method failed, get null response
      */
-    ERROR_EXECUTE_RPC_METHOD(10000013);
+    ERROR_EXECUTE_RPC_METHOD(10000013),
 
-    TinyPBErrorCode(int i) {
+    /**
+     * send message to peer error
+     */
+    ERROR_SEND_MESSAGE(10000004);
+
+    TinyRpcErrorCode(int i) {
 
     }
 }

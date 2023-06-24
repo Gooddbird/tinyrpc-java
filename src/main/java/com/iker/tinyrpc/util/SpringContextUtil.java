@@ -12,6 +12,10 @@ public class SpringContextUtil {
     @Setter
     private static AnnotationConfigApplicationContext applicationContext;
 
+    public static <T> T getBean(Class<T> type) {
+        return applicationContext.getBean(type);
+    }
+
     public static <T> T getBean(String name, Class<T> type) {
         return applicationContext.getBean(name, type);
     }

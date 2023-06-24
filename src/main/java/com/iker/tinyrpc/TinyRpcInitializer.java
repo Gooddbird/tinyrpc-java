@@ -26,8 +26,7 @@ public class TinyRpcInitializer implements CommandLineRunner {
         log.info(String.valueOf(applicationContext.getClass()));
         String[] beans = applicationContext.getBeanDefinitionNames();
         Arrays.sort(beans);
-        for (String bean : beans)
-        {
+        for (String bean : beans) {
             System.out.println(bean + " of Type :: " + applicationContext.getBean(bean).getClass());
         }
     }

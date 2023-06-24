@@ -2,7 +2,7 @@ package com.iker.tinyrpc.net.rpc.protobuf;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
-import com.iker.tinyrpc.util.TinyPBErrorCode;
+import com.iker.tinyrpc.util.TinyRpcErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ public class TinyRpcController implements RpcController {
      */
     @Getter
     @Setter
-    private TinyPBErrorCode errCode;
+    private TinyRpcErrorCode errCode;
 
     /**
      * error_info, details description of error
@@ -63,7 +63,6 @@ public class TinyRpcController implements RpcController {
     /**
      * show rpc progress is failed
      */
-    @Getter
     private boolean isFailed;
 
     /**

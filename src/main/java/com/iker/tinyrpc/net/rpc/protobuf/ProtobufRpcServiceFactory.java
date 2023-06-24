@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Component("tinyrpc-ProtobufRpcServiceFactory")
+@Component
 @Slf4j
 public class ProtobufRpcServiceFactory {
 

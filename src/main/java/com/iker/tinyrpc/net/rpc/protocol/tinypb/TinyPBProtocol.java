@@ -1,10 +1,11 @@
 package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
-import com.iker.tinyrpc.net.rpc.protocol.AbstractProtocol;
+import com.google.protobuf.Message;
+import com.iker.tinyrpc.net.rpc.protocol.RpcProtocol;
 import lombok.Getter;
 import lombok.Setter;
 
-public class TinyPBProtocol extends AbstractProtocol {
+public class TinyPBProtocol implements RpcProtocol {
 
     @Getter
     private static final byte pbStart = 0x02;
@@ -18,10 +19,10 @@ public class TinyPBProtocol extends AbstractProtocol {
     @Getter
     private static final int maxPkLen = 65536;         // max length of a TinyPB protocol package.
 
-    @Getter
     @Setter
     private int pkLen;      // length of all package
 
+    private String msgReq = ""; // length of service name
 
     @Getter
     private int serviceNameLen; // length of service name
@@ -29,10 +30,6 @@ public class TinyPBProtocol extends AbstractProtocol {
     @Getter
     private String serviceName = ""; // service full name, like QueryService.query_name
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-        serviceNameLen = serviceName.length();
-    }
 
     @Getter
     @Setter
@@ -57,8 +54,38 @@ public class TinyPBProtocol extends AbstractProtocol {
     @Setter
     private int checkSum;
 
+    public int getPkLen() {
+        resetPackageLen();
+        return pkLen;
+    }
+
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+        serviceNameLen = serviceName.length();
+    }
+
     public void resetPackageLen() {
         pkLen = msgReq.length() + serviceName.length() + errInfo.length() + pbData.length() + TinyPBProtocol.getMinPkLen();
     }
 
+    @Override
+    public void setMsgReq(String msgReq) {
+        this.msgReq = msgReq;
+    }
+
+    @Override
+    public String getMsgReq() {
+        return msgReq;
+    }
+
+    @Override
+    public int getMsgReqLen() {
+        return msgReq.length();
+    }
+
+    @Override
+    public Message getObject() {
+        return null;
+    }
 }
