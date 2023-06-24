@@ -1,13 +1,14 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
-import com.iker.tinyrpc.util.TinyRpcSystemException;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBRpcDispatcher;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
+import com.iker.tinyrpc.util.SpringContextUtil;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-
-import static com.iker.tinyrpc.util.TinyPBErrorCode.ERROR_FAILED_DECODE;
+import java.util.Optional;
+;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -90,13 +91,13 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
         log.info("channelRead, remote addr: " + address.getHostString());
-        TinyPBProtocol protocol = (TinyPBProtocol) msg;
-        if (protocol != null) {
-            log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
-        } else {
-            throw new TinyRpcSystemException(ERROR_FAILED_DECODE, "failed get object");
-        }
-//        super.channelRead(ctx, msg);
+
+        Optional.ofNullable((TinyPBProtocol) msg).ifPresent(
+                (protocol) -> {
+                    log.info(String.format("get protocol of msgReq [%s]", protocol.getMsgReq()));
+                    SpringContextUtil.getApplicationContext().getBean(TinyPBRpcDispatcher.class).dispatch(protocol, ctx.channel());
+                }
+        );
 
     }
 
@@ -157,8 +158,8 @@ public class TcpServerChannelInboundHandler extends ChannelInboundHandlerAdapter
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
         InetSocketAddress address = (InetSocketAddress)ctx.channel().remoteAddress();
         log.info("exceptionCaught, remote addr: " + address.getHostString());
+        super.exceptionCaught(ctx, cause);
     }
 }

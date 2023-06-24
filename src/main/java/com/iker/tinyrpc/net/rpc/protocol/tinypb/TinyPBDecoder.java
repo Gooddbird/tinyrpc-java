@@ -1,7 +1,6 @@
-package com.iker.tinyrpc.codec;
+package com.iker.tinyrpc.net.rpc.protocol.tinypb;
 
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
-import com.iker.tinyrpc.util.TinyPBErrorCode;
+import com.iker.tinyrpc.util.TinyRpcErrorCode;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -26,7 +25,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
      */
     @Override
     @SneakyThrows(IndexOutOfBoundsException.class)
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         int from = in.readerIndex();
         log.info("begin to do TinyPBDecoder.decode");
         while (in.isReadable()) {
@@ -48,13 +47,13 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int end = start + packageLen - 1;
             if (end >= in.writerIndex()) {
-                log.debug(String.format("read less bytes than packageLen [%d]", packageLen));
+                log.info(String.format("read less bytes than packageLen [%d]", packageLen));
                 from = start + 1;
                 continue;
             }
 
             if (in.getByte(end) != TinyPBProtocol.getPbEnd()) {
-                log.debug("read end index is not PbEnd(0x03)");
+                log.info("read end index is not PbEnd(0x03)");
                 from = start + 1;
                 continue;
             }
@@ -69,7 +68,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             if (packageLen < TinyPBProtocol.getMinPkLen() || packageLen > TinyPBProtocol.getMaxPkLen()) {
                 // a bad package, directly drop it
-                request.setErrCode(TinyPBErrorCode.ERROR_FAILED_DECODE.ordinal());
+                request.setErrCode(TinyRpcErrorCode.ERROR_FAILED_DECODE.ordinal());
                 request.setErrInfo(String.format("read pkLen [%d] out of range", packageLen));
                 out.add(request);
                 continue;
@@ -82,7 +81,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int msgReqIndex = msgReqLenIndex + 4;
             if (msgReqIndex + msgReqLen >= in.writerIndex()) {
-                request.setErrCode(TinyPBErrorCode.ERROR_FAILED_DECODE.ordinal());
+                request.setErrCode(TinyRpcErrorCode.ERROR_FAILED_DECODE.ordinal());
                 request.setErrInfo(String.format("read msgReqLen [%d] out of range", msgReqLen));
                 out.add(request);
                 continue;
@@ -96,7 +95,7 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
 
             int serviceNameIndex = serviceNameLenIndex + 4;
             if (serviceNameIndex + serviceNameLen >= in.writerIndex()) {
-                request.setErrCode(TinyPBErrorCode.ERROR_FAILED_DECODE.ordinal());
+                request.setErrCode(TinyRpcErrorCode.ERROR_FAILED_DECODE.ordinal());
                 request.setErrInfo(String.format("read serviceNameLen [%d] out of range", serviceNameLen));
                 out.add(request);
                 continue;
@@ -114,11 +113,12 @@ public class TinyPBDecoder extends ByteToMessageDecoder {
             request.setErrInfo(String.valueOf(in.getCharSequence(errInfoIndex, errInfoLen, CharsetUtil.UTF_8)));
 
             int pbDataIndex = errInfoIndex + errInfoLen;
-            request.setPbData(String.valueOf(in.getCharSequence(pbDataIndex, end - pbDataIndex - 4, CharsetUtil.UTF_8)));
+            request.setPbData(String.valueOf(in.getCharSequence(pbDataIndex, end - pbDataIndex - 4, CharsetUtil.ISO_8859_1)));
 
             int checkSumIndex = end - 4;
             request.setCheckSum(in.getInt(checkSumIndex));
             out.add(request);
+            log.info(String.format("success decode a TinyPBProtocol of msgReq[%s]", request.getMsgReq()));
         }
         log.info("end TinyPBDecoder.decode");
     }

@@ -15,31 +15,14 @@ import java.util.Arrays;
 
 @SpringBootApplication
 @Slf4j
-public class TinyRpcJavaApplication implements CommandLineRunner {
+public class TinyRpcJavaApplication {
 
     public static void main(String[] args) {
         log.info("TinyRpcJavaApplication run begin");
-        ConfigurableApplicationContext context = SpringApplication.run(TinyRpcJavaApplication.class, args);
-        SpringContextUtil.setApplicationContext(context);
+        SpringApplication.run(TinyRpcJavaApplication.class, args);
         log.info("TinyRpcJavaApplication run end");
+
+
     }
 
-    @Getter
-    @Resource
-    private ApplicationContext applicationContext;
-
-
-    /**
-     * @param args incoming main method arguments
-     * @throws Exception
-     */
-    @Override
-    public void run(String... args) throws Exception {
-//        String[] beans = applicationContext.getBeanDefinitionNames();
-//        Arrays.sort(beans);
-//        for (String bean : beans)
-//        {
-//            System.out.println(bean + " of Type :: " + applicationContext.getBean(bean).getClass());
-//        }
-    }
 }

@@ -1,12 +1,12 @@
 package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 
 @SpringBootTest
@@ -21,13 +21,17 @@ class TcpServerTest {
     void tearDown() {
     }
 
+
     @Test
-    void bind() {
+    void start() {
         try {
-            TcpServer tcpServer = new TcpServer();
-            tcpServer.start(new InetSocketAddress(12345));
-            log.debug("bind success");
-        } catch (InterruptedException e) {
+            TcpServer tcpServer = SpringContextUtil.getBean(TcpServer.class);
+            tcpServer.initMainLoopGroup(1);
+            tcpServer.initWorkerLoopGroup(4);
+            tcpServer.setLocalAddress(new InetSocketAddress(12345));
+            tcpServer.start();
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

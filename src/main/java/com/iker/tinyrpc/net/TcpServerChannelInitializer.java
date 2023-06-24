@@ -1,7 +1,7 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.codec.TinyPBDecoder;
-import com.iker.tinyrpc.codec.TinyPBEncoder;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBDecoder;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -17,8 +17,9 @@ public class TcpServerChannelInitializer extends ChannelInitializer<Channel> {
     protected void initChannel(Channel ch) throws Exception {
         ch.pipeline().addLast(new IdleStateHandler(75, 75, 75, TimeUnit.SECONDS))
                 .addLast("tinyPBDecoder", new TinyPBDecoder())
+                .addLast("inBoundHandler", new TcpServerChannelInboundHandler())
                 .addLast("tinyPBEncoder", new TinyPBEncoder())
-                .addLast("inboundHandler", new TcpServerChannelInboundHandler())
+                .addLast("outBoundHandler", new TcpServerChannelOutboundHandler())
                 .addLast("exceptionHandler", new TcpServerExceptionHandler());
     }
 }

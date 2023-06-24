@@ -1,6 +1,13 @@
 package com.iker.tinyrpc.net;
 
-import com.iker.tinyrpc.protocol.TinyPBProtocol;
+import com.iker.tinyrpc.net.rpc.protobuf.DefaultRpcCallback;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcAsyncChannel;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcController;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcSyncChannel;
+import com.iker.tinyrpc.proto.QueryService;
+import com.iker.tinyrpc.proto.queryNameReq;
+import com.iker.tinyrpc.proto.queryNameRes;
+import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +16,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.annotation.Resource;
-
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
 @Slf4j
@@ -29,21 +34,26 @@ class TcpClientTest {
 
     TcpClient genTcpClient() {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
-        TcpClient tcpClient = new TcpClient(eventLoopGroup);
-        tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
+        TcpClient tcpClient = new TcpClient(new InetSocketAddress("0.0.0.0", 12345), eventLoopGroup);
+        tcpClient.connect();
         return tcpClient;
     }
 
     TinyPBProtocol genTinyPBProtocol() {
+        queryNameReq request = queryNameReq.newBuilder().setReqNo(999).setId(1).build();
+
         TinyPBProtocol protocol = new TinyPBProtocol();
-        protocol.setPbData("test");
+        try {
+            protocol.setPbData(request.toByteString().toString("ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        };
         String msgReq = "1234567890";
         protocol.setMsgReq(msgReq);
-        protocol.setErrCode(0);
-        protocol.setErrInfo("");
-        String serviceName = "TestService.query";
+        String serviceName = "QueryService.query_name";
         protocol.setServiceName(serviceName);
         protocol.resetPackageLen();
+        log.info(String.format("package length is %d", protocol.getPkLen()));
         return protocol;
     }
 
@@ -53,9 +63,33 @@ class TcpClientTest {
     }
 
     @Test
-    void sendMessage() {
+    void sendMessage() throws InterruptedException {
         TcpClient tcpClient = genTcpClient();
         TinyPBProtocol protocol = genTinyPBProtocol();
         tcpClient.sendMessage(protocol);
+
+        Thread.sleep(100000);
+    }
+
+    @Test
+    void callMethod() {
+        queryNameReq request = queryNameReq.newBuilder().setReqNo(999).setId(1).build();
+        TinyRpcAsyncChannel tinyRpcSyncChannel = new TinyRpcAsyncChannel(new InetSocketAddress("0.0.0.0", 12345));
+        TinyRpcController rpcController = new TinyRpcController();
+
+
+        log.info("request info : {}", request);
+        QueryService.newStub(tinyRpcSyncChannel).queryName(rpcController, request, (res)-> {
+            log.info("get response {}", res.toString());
+        });
+
+        try {
+            tinyRpcSyncChannel.sync();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
