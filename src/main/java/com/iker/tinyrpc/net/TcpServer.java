@@ -50,7 +50,7 @@ public class TcpServer {
             TinyPBService annotation = item.getAnnotation(TinyPBService.class);
             String name = Optional.ofNullable(annotation).<RuntimeException>orElseThrow(
                     () -> { throw new RuntimeException("get TinyPBService annotation null"); }
-            ).name();
+            ).serviceName();
 
             // register name must be same as the service's name in protobuf file
             if (name.isEmpty()) {

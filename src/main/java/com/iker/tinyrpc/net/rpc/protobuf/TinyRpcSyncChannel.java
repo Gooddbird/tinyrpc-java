@@ -4,7 +4,7 @@ import com.iker.tinyrpc.util.TinyRpcSystemException;
 
 import java.net.InetSocketAddress;
 
-public class TinyRpcSyncChannel extends AbstractProtobufRpcChannel {
+public class TinyRpcSyncChannel extends AbstractRpcChannel {
 
     public TinyRpcSyncChannel(InetSocketAddress peerAddr) {
         super(peerAddr);

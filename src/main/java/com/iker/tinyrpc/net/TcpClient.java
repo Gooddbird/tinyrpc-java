@@ -33,21 +33,19 @@ public class TcpClient {
 
     private ChannelFuture connectChannelFuture;
 
-    private final Bootstrap bootstrap;
-
     public TcpClient(InetSocketAddress peerAddress, EventLoopGroup eventLoopGroup) {
         this.peerAddress = peerAddress;
         this.eventLoopGroup = eventLoopGroup;
-        bootstrap = new Bootstrap();
-        bootstrap.group(eventLoopGroup)
-                .channel(NioSocketChannel.class)
-                .remoteAddress(Optional.ofNullable(peerAddress).orElseThrow(
-                        () -> { throw new TinyRpcSystemException(ERROR_FAILED_CONNECT, "peer address is null"); }
-                ))
-                .handler(new TcpClientChannelInitializer());
     }
 
     public ChannelFuture connect() {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(eventLoopGroup)
+                .channel(NioSocketChannel.class)
+                .remoteAddress(Optional.ofNullable(peerAddress).<TinyRpcSystemException>orElseThrow(
+                        () -> { throw new TinyRpcSystemException(ERROR_FAILED_CONNECT, "peer address is null"); }
+                ))
+                .handler(new TcpClientChannelInitializer());
         connectChannelFuture = bootstrap.connect();
         channel = connectChannelFuture.channel();
         connectChannelFuture.addListener((ChannelFutureListener) future -> {

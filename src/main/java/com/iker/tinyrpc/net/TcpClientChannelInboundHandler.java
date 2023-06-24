@@ -69,7 +69,7 @@ public class TcpClientChannelInboundHandler extends ChannelInboundHandlerAdapter
         Optional.ofNullable((RpcProtocol) msg).ifPresent(
                 (protocol) -> {
                     log.info(String.format("success get reply protocol of msgReq [%s]", protocol.getMsgReq()));
-                    SpringContextUtil.getApplicationContext().getBean(RpcFutureMap.class).getFuture(ctx.channel().id() + "-" + protocol.getMsgReq()).invoke(protocol);
+                    SpringContextUtil.getApplicationContext().getBean(RpcFutureMap.class).getFuture(protocol.getMsgReq()).invoke(protocol);
                 }
         );
         super.channelRead(ctx, msg);

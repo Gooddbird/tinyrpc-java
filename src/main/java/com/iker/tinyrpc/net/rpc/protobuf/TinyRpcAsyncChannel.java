@@ -1,7 +1,5 @@
 package com.iker.tinyrpc.net.rpc.protobuf;
 
-import com.google.protobuf.Message;
-import com.iker.tinyrpc.net.future.RpcFuture;
 import com.iker.tinyrpc.net.future.RpcSyncFuture;
 import com.iker.tinyrpc.net.rpc.RpcFutureMap;
 import com.iker.tinyrpc.util.SpringContextUtil;
@@ -18,14 +16,12 @@ import java.util.concurrent.ExecutionException;
  * An async RpcChannel to do rpc, it will not be blocking
  */
 @Slf4j
-public class TinyRpcAsyncChannel extends AbstractProtobufRpcChannel {
+public class TinyRpcAsyncChannel extends AbstractRpcChannel {
 
     public TinyRpcAsyncChannel(InetSocketAddress peerAddr) {
         super(peerAddr);
     }
 
-    @Getter
-    private RpcSyncFuture replyFuture;
 
     public void sync() throws ExecutionException, InterruptedException {
         replyFuture.get();
@@ -34,7 +30,7 @@ public class TinyRpcAsyncChannel extends AbstractProtobufRpcChannel {
     private void registerFuture() {
         // 首先注册 future 对象。 无论成功或者失败都会调用 callback
         // 因此主调方需要在 callback 判断 rpc 调用是否成功
-        String id = tcpClient.getChannel().id() + "-" + sendProtocol.getMsgReq();
+        String id = sendProtocol.getMsgReq();
         replyFuture = new RpcSyncFuture(id, ()-> {
             log.info("{}|{}|RpcCallBack, peer addr {}", sendProtocol.getMsgReq(), sendProtocol.getServiceName(), peerAddr.toString());
 
@@ -58,6 +54,7 @@ public class TinyRpcAsyncChannel extends AbstractProtobufRpcChannel {
 
         // future 对象注册到全局 map 里面
         SpringContextUtil.getBean(RpcFutureMap.class).addFuture(replyFuture);
+        log.info("register RpcFuture {} success", id);
     }
 
     private void invokeFuture(TinyRpcErrorCode errorCode, String errorInfo) {
@@ -77,8 +74,9 @@ public class TinyRpcAsyncChannel extends AbstractProtobufRpcChannel {
      */
     @Override
     protected void ioHandler() throws TinyRpcSystemException {
+        registerFuture();
+
         asyncConnect().addListener( future -> {
-            registerFuture();
             if (future.isSuccess()) {
                 log.info("{}|connect to peer addr {} success", sendProtocol.getMsgReq(), peerAddr.toString());
                 asyncSendMessage().addListener( future1 -> {

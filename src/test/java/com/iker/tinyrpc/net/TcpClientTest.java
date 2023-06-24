@@ -1,5 +1,7 @@
 package com.iker.tinyrpc.net;
 
+import com.iker.tinyrpc.net.rpc.protobuf.DefaultRpcCallback;
+import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcAsyncChannel;
 import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcController;
 import com.iker.tinyrpc.net.rpc.protobuf.TinyRpcSyncChannel;
 import com.iker.tinyrpc.proto.QueryService;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
 @Slf4j
@@ -71,14 +74,22 @@ class TcpClientTest {
     @Test
     void callMethod() {
         queryNameReq request = queryNameReq.newBuilder().setReqNo(999).setId(1).build();
-        queryNameRes response = queryNameRes.newBuilder().build();
-        TinyRpcSyncChannel tinyRpcSyncChannel = new TinyRpcSyncChannel(new InetSocketAddress("0.0.0.0", 12345));
+        TinyRpcAsyncChannel tinyRpcSyncChannel = new TinyRpcAsyncChannel(new InetSocketAddress("0.0.0.0", 12345));
         TinyRpcController rpcController = new TinyRpcController();
 
 
-        log.info(String.format("request info : %s", request));
-        tinyRpcSyncChannel.callMethod(QueryService.getDescriptor().findMethodByName("query_name"), rpcController, request, response, null);
+        log.info("request info : {}", request);
+        QueryService.newStub(tinyRpcSyncChannel).queryName(rpcController, request, (res)-> {
+            log.info("get response {}", res.toString());
+        });
 
-        log.info(String.format("get response info : %s", response));
+        try {
+            tinyRpcSyncChannel.sync();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

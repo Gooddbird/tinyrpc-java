@@ -3,21 +3,25 @@ package com.iker.tinyrpc.net.rpc.protobuf;
 import com.google.protobuf.*;
 import com.iker.tinyrpc.net.TcpClient;
 import com.iker.tinyrpc.net.TcpServer;
+import com.iker.tinyrpc.net.future.RpcSyncFuture;
+import com.iker.tinyrpc.net.rpc.protocol.RpcProtocol;
 import com.iker.tinyrpc.net.rpc.protocol.tinypb.TinyPBProtocol;
 import com.iker.tinyrpc.util.SpringContextUtil;
 import com.iker.tinyrpc.util.TinyRpcErrorCode;
 import com.iker.tinyrpc.util.TinyRpcSystemException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
-public abstract class AbstractProtobufRpcChannel implements RpcChannel {
+public abstract class AbstractRpcChannel implements DefaultRpcChannel {
     protected final InetSocketAddress peerAddr;
 
     protected TinyPBProtocol sendProtocol;
@@ -34,7 +38,10 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
 
     protected Message responsePrototype;
 
-    public AbstractProtobufRpcChannel(InetSocketAddress peerAddr) {
+    @Getter
+    protected RpcSyncFuture replyFuture;
+
+    public AbstractRpcChannel(InetSocketAddress peerAddr) {
         this.peerAddr = peerAddr;
     }
 
@@ -44,9 +51,10 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
         try {
             init(controller, request, responsePrototype, done);
 
+            fillRpcController(method);
+
             generateTinyPBProtocol(request);
 
-            fillRpcController(method);
 
             ioHandler();
 
@@ -86,12 +94,14 @@ public abstract class AbstractProtobufRpcChannel implements RpcChannel {
     }
 
     protected Message parseResponse(Message responsePrototype) {
-        if (replyProtocol != null) {
-            try {
-                return responsePrototype.toBuilder().mergeFrom(ByteString.copyFrom(replyProtocol.getPbData(), StandardCharsets.ISO_8859_1)).build();
-            } catch (InvalidProtocolBufferException e) {
-                throw new RuntimeException(e);
+        try {
+            RpcProtocol protocol =  replyFuture.get();
+            if (protocol != null) {
+                TinyPBProtocol tinyPBProtocol = (TinyPBProtocol) (protocol);
+                return responsePrototype.toBuilder().mergeFrom(ByteString.copyFrom(tinyPBProtocol.getPbData(), StandardCharsets.ISO_8859_1)).build();
             }
+        } catch (InterruptedException | ExecutionException | InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

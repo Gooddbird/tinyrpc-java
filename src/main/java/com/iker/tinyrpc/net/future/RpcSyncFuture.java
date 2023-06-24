@@ -77,16 +77,19 @@ public class RpcSyncFuture implements RpcFuture<RpcProtocol> {
             return reply;
         }
 
-        needInvoke = true;
         lock.lock();
+        needInvoke = true;
+        if (reply != null) {
+            return reply;
+        }
         try {
             while (!done) {
                 if(condition.await(timeout, unit)){
+                    // invoked by other thread
+                    log.info("RpcFuture:{} invoked", id);
+                } else {
                     // timeout
                     log.info("RpcFuture:{} timeout", id);
-                } else {
-                    // invoke by others
-                    log.info("RpcFuture:{} invoked", id);
                 }
             }
         } catch (InterruptedException e) {
