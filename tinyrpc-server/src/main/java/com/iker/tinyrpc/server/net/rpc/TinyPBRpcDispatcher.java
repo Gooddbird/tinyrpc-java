@@ -22,8 +22,8 @@ public class TinyPBRpcDispatcher extends AbstractRpcDispatcher {
         String serviceName = "";
         String methodName = "";
 
-        RpcServiceFactory rpcServiceFactory = new RpcServiceFactory();
-        Service service = (Service) rpcServiceFactory.getService(serviceName).orElseThrow(
+        RpcProviderFactory rpcProviderFactory = new RpcProviderFactory();
+        Service service = (Service) rpcProviderFactory.getService(serviceName).orElseThrow(
                 () -> new TinyRpcSystemException(TinyPBErrorCode.ERROR_SERVICE_NOT_FOUND, String.format("not found service name of [%s]", serviceName))
         );
 

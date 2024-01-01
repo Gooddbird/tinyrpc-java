@@ -3,12 +3,11 @@ package com.iker.tinyrpc.server.net.rpc;
 import com.iker.tinyrpc.server.utils.exception.TinyRpcSystemException;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-public class RpcServiceFactory {
+public class RpcProviderFactory {
 
     private Map<String, Object> rpcServiceMap;
 

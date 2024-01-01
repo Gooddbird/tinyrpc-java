@@ -30,7 +30,7 @@ public class TcpServer {
 
     public void start(InetSocketAddress localAddress) throws InterruptedException, TinyRpcSystemException {
         try {
-            if(this.localAddress != null) {
+            if (this.localAddress != null) {
                 throw new TinyRpcSystemException("TinyRPC TcpServer start error, local address has set.");
             }
             this.localAddress = localAddress;

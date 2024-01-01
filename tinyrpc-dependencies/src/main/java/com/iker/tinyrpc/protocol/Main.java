@@ -1,4 +1,4 @@
-package com.iker.tinyrpc.server.utils;
+package com.iker.tinyrpc.protocol;
 
 public class Main {
     public static void main(String[] args) {
