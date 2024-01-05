@@ -1,6 +1,7 @@
 package com.iker.tinyrpc.server.net;
 
 import com.iker.tinyrpc.server.protocol.TinyPBProtocol;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ class TcpClientTest {
     TcpClient genTcpClient() {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
         TcpClient tcpClient = new TcpClient(eventLoopGroup);
-        tcpClient.connect(new InetSocketAddress("0.0.0.0", 12345));
+        tcpClient.connect(new InetSocketAddress("0.0.0.0", 12346));
         return tcpClient;
     }
 
@@ -51,9 +52,10 @@ class TcpClientTest {
     }
 
     @Test
-    void sendMessage() {
+    void sendMessage() throws InterruptedException {
         TcpClient tcpClient = genTcpClient();
         TinyPBProtocol protocol = genTinyPBProtocol();
-        tcpClient.sendMessage(protocol);
+        ChannelFuture channelFuture = tcpClient.sendMessage(protocol);
+        channelFuture.sync();
     }
 }

@@ -21,8 +21,13 @@ class TcpServerTest {
     @Test
     void bind() {
         try {
+            log.debug("begin success");
+
             TcpServer tcpServer = new TcpServer();
-            tcpServer.start(new InetSocketAddress(12345));
+            tcpServer.setLocalAddress(new InetSocketAddress(12346));
+            tcpServer.initMainLoopGroup(1);
+            tcpServer.initWorkerLoopGroup(2);
+            tcpServer.start();
             log.debug("bind success");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
